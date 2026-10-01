@@ -121,6 +121,7 @@
   .mic-big{
     flex:none;background:var(--fresco);color:#fff;border:none;border-radius:50%;
     width:64px;height:64px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    touch-action:none; user-select:none; -webkit-user-select:none;
   }
   .mic-big svg.lucide{width:28px;height:28px}
   .mic-big.listening{background:var(--brick);animation:pulse 1.2s infinite}
@@ -1029,21 +1030,39 @@ function wireMicComposer(scene, turn, idx){
   if(!micBtn) return;
 
   var pressed = false;
+  var safetyTimer = null;
+
   function onPress(e){
-    if(e.cancelable) e.preventDefault(); // stop touch from also firing a click, and stop page scroll while holding
-    if(pressed || recognizing) return;
+    if(e.cancelable) e.preventDefault();
+    if(pressed){
+      // Already (supposedly) listening and the button was pressed again — treat this as
+      // a manual force-stop escape hatch, in case the release event never fired last time.
+      onRelease();
+      return;
+    }
     pressed = true;
     startMicHold(scene, turn, idx, micBtn, micStatus);
+    // Hard ceiling so the mic can never hang open indefinitely even if every release
+    // event below fails to fire on a given device — 20s is well past any real answer.
+    safetyTimer = setTimeout(onRelease, 20000);
   }
   function onRelease(){
     if(!pressed) return;
     pressed = false;
+    if(safetyTimer){ clearTimeout(safetyTimer); safetyTimer = null; }
     if(recognizing) stopMic(micBtn, micStatus); // triggers onend, which submits whatever was heard
   }
+
+  // Redundant across event families on purpose: pointer events aren't uniformly reliable
+  // for every custom button on every Android Chrome build, so touch/mouse are backups,
+  // not duplicates of the same guarantee.
   micBtn.addEventListener('pointerdown', onPress);
   micBtn.addEventListener('pointerup', onRelease);
   micBtn.addEventListener('pointercancel', onRelease);
-  micBtn.addEventListener('pointerleave', onRelease); // finger slid off the button — stop rather than listen forever
+  micBtn.addEventListener('pointerleave', onRelease);
+  micBtn.addEventListener('touchend', onRelease);
+  micBtn.addEventListener('touchcancel', onRelease);
+  micBtn.addEventListener('mouseup', onRelease);
 }
 
 // Press-and-hold to talk: starts on pointerdown, keeps listening through pauses
