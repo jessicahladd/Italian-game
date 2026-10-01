@@ -1096,6 +1096,8 @@ function startMicHold(scene, turn, idx, micBtn, micStatus){
       if(val){
         micStatus.textContent = '';
         evaluateAndSubmit(scene, idx, turn, val);
+      } else {
+        micStatus.textContent = "Didn't catch anything — hold the button a little longer and try again.";
       }
     };
     recognizer.start();
