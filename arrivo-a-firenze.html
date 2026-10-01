@@ -937,7 +937,7 @@ function renderComposer(scene, idx){
   var micOk = micSupported();
   if(inputMode === 'mic' && micOk){
     html += '<div class="mic-row">';
-    html += '<button class="mic-big" id="btn-mic-big" aria-label="Speak your answer">'+iconSvg('mic')+'</button>';
+    html += '<button class="mic-big" id="btn-mic-big" aria-label="Hold to speak your answer, release when done">'+iconSvg('mic')+'</button>';
     html += '<button class="mode-switch" id="btn-switch-text">Digita invece</button>';
     html += '</div>';
   } else {
@@ -1027,15 +1027,30 @@ function wireMicComposer(scene, turn, idx){
   var switchBtn = document.getElementById('btn-switch-text');
   if(switchBtn) switchBtn.addEventListener('click', function(){ switchInputMode('text', scene); });
   if(!micBtn) return;
-  micBtn.addEventListener('click', function(){
-    if(recognizing){ stopMic(micBtn, micStatus); return; }
-    startMicAuto(scene, turn, idx, micBtn, micStatus);
-  });
+
+  var pressed = false;
+  function onPress(e){
+    if(e.cancelable) e.preventDefault(); // stop touch from also firing a click, and stop page scroll while holding
+    if(pressed || recognizing) return;
+    pressed = true;
+    startMicHold(scene, turn, idx, micBtn, micStatus);
+  }
+  function onRelease(){
+    if(!pressed) return;
+    pressed = false;
+    if(recognizing) stopMic(micBtn, micStatus); // triggers onend, which submits whatever was heard
+  }
+  micBtn.addEventListener('pointerdown', onPress);
+  micBtn.addEventListener('pointerup', onRelease);
+  micBtn.addEventListener('pointercancel', onRelease);
+  micBtn.addEventListener('pointerleave', onRelease); // finger slid off the button — stop rather than listen forever
 }
 
-// Tap once to listen; the answer submits itself as soon as speech recognition ends,
-// so there's no separate send step while in mic mode.
-function startMicAuto(scene, turn, idx, micBtn, micStatus){
+// Press-and-hold to talk: starts on pointerdown, keeps listening through pauses
+// (continuous:true — a plain tap-to-toggle mode used continuous:false, which made Chrome
+// auto-stop at the first pause rather than waiting for the actual end of the sentence),
+// and stops only on release, submitting whatever was heard.
+function startMicHold(scene, turn, idx, micBtn, micStatus){
   if(!SpeechRec) return;
   var finalText = '';
   try{
@@ -1043,7 +1058,7 @@ function startMicAuto(scene, turn, idx, micBtn, micStatus){
     recognizer.lang = 'it-IT';
     recognizer.interimResults = true;
     recognizer.maxAlternatives = 1;
-    recognizer.continuous = false;
+    recognizer.continuous = true;
     recognizer.onresult = function(e){
       var text = '';
       for(var i=0; i<e.results.length; i++) text += e.results[i][0].transcript;
@@ -1067,7 +1082,7 @@ function startMicAuto(scene, turn, idx, micBtn, micStatus){
     recognizer.start();
     recognizing = true;
     micBtn.classList.add('listening');
-    micStatus.textContent = "Ascolto…";
+    micStatus.textContent = "Ascolto… tieni premuto, rilascia quando hai finito";
   }catch(e){
     recognizing = false;
     micStatus.textContent = "Couldn't start the mic. Tap \u201cDigita invece\u201d to type.";
