@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Arrivo a Firenze</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.525.0/dist/umd/lucide.min.js"></script>
+<style>
+  :root{
+    box-sizing:border-box;
+    --ink:#2B2620;
+    --stone:#EDE6D6;
+    --stone-2:#E3DAC5;
+    --card:#FBF8F1;
+    --fresco:#3C5C4E;
+    --fresco-dk:#294038;
+    --ochre:#C98A3B;
+    --brick:#A8462F;
+    --brick-bg:#F3E2DC;
+    --gold:#8C6A1F;
+    --gold-bg:#F1E7CE;
+    --line:#D8CEB6;
+    --muted:#7A7263;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box}
+  html{scroll-padding-top:env(safe-area-inset-top,0px)}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--stone);color:var(--ink);
+    font-family:'Source Sans 3',system-ui,sans-serif;
+    font-size:16px;line-height:1.5;
+    -webkit-tap-highlight-color:transparent;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#EFE9DC; --stone:#1C1A16; --stone-2:#242019; --card:#252119;
+      --fresco:#6FA08C; --fresco-dk:#4E7A68; --ochre:#E0A85C;
+      --brick:#D97A5E; --brick-bg:#3A2620; --gold:#D9B96B; --gold-bg:#332B18;
+      --line:#3A3427; --muted:#A69C87;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#EFE9DC; --stone:#1C1A16; --stone-2:#242019; --card:#252119;
+    --fresco:#6FA08C; --fresco-dk:#4E7A68; --ochre:#E0A85C;
+    --brick:#D97A5E; --brick-bg:#3A2620; --gold:#D9B96B; --gold-bg:#332B18;
+    --line:#3A3427; --muted:#A69C87;
+  }
+
+  h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0}
+  svg.lucide{width:1em;height:1em;display:block}
+  .icon-btn svg.lucide, .send svg.lucide, .mic svg.lucide{width:20px;height:20px}
+
+  #app{max-width:520px;margin:0 auto;min-height:100%;padding-bottom:100vh;display:flex;flex-direction:column}
+
+  /* ---- Top bar ---- */
+  header{
+    position:sticky;top:0;padding-top:env(safe-area-inset-top,0px);
+    background:var(--stone);z-index:10;border-bottom:1px solid var(--line);
+  }
+  .topbar{display:flex;align-items:center;gap:10px;padding:12px 16px}
+  .topbar h1{font-size:17px;flex:1;letter-spacing:0.2px}
+  .icon-btn{
+    background:none;border:none;color:var(--ink);font-size:20px;padding:6px;
+    line-height:1;cursor:pointer;border-radius:8px;
+  }
+  .icon-btn:active{background:var(--stone-2)}
+  .trail{display:flex;gap:6px;padding:0 16px 12px}
+  .trail .stop{
+    flex:1;height:5px;border-radius:3px;background:var(--line);position:relative;overflow:hidden;
+  }
+  .trail .stop.done{background:var(--fresco)}
+  .trail .stop.current{background:var(--line)}
+  .trail .stop.current::after{
+    content:'';position:absolute;inset:0;width:50%;background:var(--ochre);
+  }
+
+  /* ---- Scene intro ---- */
+  .scene-hero{
+    padding:22px 20px 18px;border-bottom:1px solid var(--line);
+  }
+  .scene-eyebrow{font-size:13px;color:var(--muted);margin-bottom:4px}
+  .scene-hero h2{font-size:24px;line-height:1.25}
+  .scene-hero p{margin:8px 0 0;color:var(--muted);font-size:14.5px;max-width:38ch}
+
+  /* ---- Log ---- */
+  main{padding:16px;display:flex;flex-direction:column;gap:14px}
+  .turn{display:flex;flex-direction:column;gap:6px;max-width:88%}
+  .turn.npc{align-self:flex-start;width:52%;max-width:52%}
+  .turn.npc.npc-wide{width:85%;max-width:85%}
+  .turn.player{align-self:flex-end;align-items:flex-end}
+  .who{font-size:11.5px;color:var(--muted);padding:0 4px}
+  .bubble{
+    border-radius:16px;padding:11px 14px;font-size:16px;line-height:1.5;
+    display:flex;align-items:flex-start;gap:8px;
+  }
+  .turn.npc .bubble{background:var(--card);border:1px solid var(--line);border-top-left-radius:4px}
+  .turn.player .bubble{background:var(--fresco);color:#fff;border-top-right-radius:4px}
+  .hear-btn{
+    flex:none;border:none;background:none;cursor:pointer;color:var(--fresco);
+    font-size:19px;padding:2px;margin-top:1px;border-radius:6px;line-height:1;
+  }
+  .turn.npc .hear-btn{color:var(--fresco)}
+  .turn.player .hear-btn{color:rgba(255,255,255,0.85)}
+  .hear-btn:active{opacity:0.6}
+  .hear-btn.slow{opacity:0.6;font-size:13px}
+  .hear-btn.slow:active{opacity:0.9}
+  .hear-btn.reveal-text{font-size:17px;opacity:0.75}
+  .hear-btn.icon-lg{font-size:27px}
+
+  .bubble-npc{display:flex;flex-direction:column;align-items:stretch;gap:9px}
+  .bubble-npc .icon-row{display:flex;align-items:center;justify-content:space-between;width:100%}
+  .bubble-npc .icon-row .right-icons{display:flex;align-items:center;gap:22px}
+  .bubble-npc .npc-text{font-size:16px;line-height:1.5}
+
+  .mic-row{display:flex;align-items:center;gap:16px;padding:4px 2px 2px}
+  .mic-big{
+    flex:none;background:var(--fresco);color:#fff;border:none;border-radius:50%;
+    width:64px;height:64px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .mic-big svg.lucide{width:28px;height:28px}
+  .mic-big.listening{background:var(--brick);animation:pulse 1.2s infinite}
+  .mode-switch{
+    flex:1;text-align:left;border:none;background:none;color:var(--fresco-dk);font-size:14.5px;
+    cursor:pointer;font-family:inherit;text-decoration:underline;text-underline-offset:2px;
+  }
+  .mode-switch-icon{
+    flex:none;background:none;color:var(--fresco-dk);border:none;border-radius:50%;
+    width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+
+  .note{
+    align-self:flex-start;max-width:92%;font-size:13.5px;color:var(--muted);
+    background:var(--stone-2);border-radius:10px;padding:8px 12px;
+  }
+  .note b{color:var(--ink)}
+  .note-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .note-text{flex:1}
+  .note-translate{flex:none;font-size:16px;opacity:0.7;margin-top:1px}
+  .note-en{margin-top:6px;color:var(--ink);opacity:0.8}
+
+  .fix{
+    align-self:flex-end;max-width:92%;background:var(--brick-bg);border-radius:12px;
+    padding:10px 13px;font-size:14.5px;border-top-right-radius:4px;
+  }
+  .fix .fix-label{font-size:11.5px;color:var(--brick);font-weight:600;margin-bottom:3px}
+  .fix .fix-line{display:flex;align-items:flex-start;gap:8px;font-family:inherit;color:var(--ink)}
+  .fix .hear-btn{color:var(--brick)}
+  .fix .fix-why{margin-top:6px;color:var(--muted);font-size:13.5px}
+
+  .correct-tag{
+    align-self:flex-end;font-size:12.5px;color:var(--fresco-dk);
+    background:var(--gold-bg);padding:4px 10px;border-radius:999px;
+    display:flex;align-items:center;gap:5px;
+  }
+
+  /* ---- Choice tiles ---- */
+  .tiles{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-end;justify-content:flex-end;max-width:100%}
+  .tile{
+    border:1px solid var(--line);background:var(--card);color:var(--ink);
+    border-radius:10px;padding:9px 13px;font-size:15px;cursor:pointer;font-family:inherit;
+  }
+  .tile:active{background:var(--stone-2)}
+
+  /* ---- Input row ---- */
+  .composer{
+    padding:10px 16px calc(12px + env(safe-area-inset-bottom,0px));
+    background:var(--stone);
+  }
+  .composer-inner{
+    display:flex;gap:8px;align-items:flex-end;background:var(--card);
+    border:1px solid var(--line);border-radius:16px;padding:6px 6px 6px 14px;
+  }
+  .composer textarea{
+    flex:1;border:none;background:none;resize:none;font-family:inherit;font-size:16px;
+    color:var(--ink);padding:8px 0;max-height:90px;outline:none;
+  }
+  .composer textarea::placeholder{color:var(--muted)}
+  .composer .send{
+    flex:none;background:var(--fresco);color:#fff;border:none;border-radius:12px;
+    width:40px;height:40px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .composer .send:disabled{opacity:0.35}
+  .composer .mic{
+    flex:none;background:none;color:var(--fresco-dk);border:none;border-radius:50%;
+    width:36px;height:36px;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .composer .mic.listening{background:var(--brick);color:#fff;animation:pulse 1.2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(168,70,47,0.45)}70%{box-shadow:0 0 0 10px rgba(168,70,47,0)}100%{box-shadow:0 0 0 0 rgba(168,70,47,0)}}
+  .mic-status{font-size:12.5px;color:var(--brick);padding:6px 2px 0;min-height:0}
+
+  /* ---- Scene end ---- */
+  .scene-end{padding:20px;text-align:center}
+  .scene-end h2{font-size:21px;margin-bottom:6px}
+  .scene-end p{color:var(--muted);font-size:14.5px;margin:0 0 18px}
+  .tally{display:flex;justify-content:center;gap:18px;margin-bottom:20px}
+  .tally .num{font-family:'Fraunces',serif;font-size:28px;color:var(--fresco-dk)}
+  .tally .lbl{font-size:12px;color:var(--muted)}
+  .mistake-list{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:18px}
+  .mistake-list .mi{padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .mistake-list .mi:last-child{border-bottom:none}
+  .mistake-list .mi .tag{font-size:11px;color:var(--ochre);text-transform:none}
+  .mistake-list .mi-row{display:flex;gap:8px;margin-top:4px;align-items:baseline}
+  .mistake-list .mi-label{flex:none;width:52px;font-size:11.5px;color:var(--muted)}
+  .mistake-list .mi-said{color:var(--brick);text-decoration:line-through;text-decoration-color:rgba(168,70,47,0.4)}
+  .mistake-list .mi-correct{color:var(--fresco-dk)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    background:var(--fresco);color:#fff;border:none;border-radius:12px;
+    padding:13px 22px;font-size:15.5px;font-family:inherit;cursor:pointer;width:100%;
+  }
+  .btn.ghost{background:none;border:1px solid var(--line);color:var(--ink);margin-top:10px}
+  .btn:active{opacity:0.85}
+
+  /* ---- Home / map ---- */
+  .home{padding:20px}
+  .home-hero{padding:8px 4px 20px}
+  .home-hero .kicker{font-size:13px;color:var(--muted);margin-bottom:6px}
+  .home-hero h1{font-size:30px;line-height:1.15}
+  .home-hero p{color:var(--muted);font-size:14.5px;margin-top:8px;max-width:36ch}
+
+  .stops{list-style:none;margin:0;padding:0;border-left:2px solid var(--line);margin-left:11px}
+  .stops li{position:relative;padding:0 0 22px 24px}
+  .stops li:last-child{padding-bottom:0}
+  .stops li::before{
+    content:'';position:absolute;left:-7px;top:2px;width:12px;height:12px;border-radius:50%;
+    background:var(--stone);border:2px solid var(--line);
+  }
+  .stops li.done::before{background:var(--fresco);border-color:var(--fresco)}
+  .stops li.active::before{background:var(--ochre);border-color:var(--ochre)}
+  .stop-card{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;
+    cursor:pointer;
+  }
+  .stop-card:active{background:var(--stone-2)}
+  .stop-card.locked{opacity:0.5;cursor:default}
+  .stop-card .stop-title{font-family:'Fraunces',serif;font-size:17px;margin-bottom:2px}
+  .stop-card .stop-meta{font-size:13px;color:var(--muted)}
+  .stop-status{
+    display:inline-block;margin-top:8px;font-size:11.5px;padding:3px 9px;border-radius:999px;
+    background:var(--gold-bg);color:var(--fresco-dk);
+  }
+
+  .settings-btn{
+    display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:13px 14px;font-family:inherit;font-size:14.5px;color:var(--ink);
+    margin-top:10px;cursor:pointer;
+  }
+  .settings-btn .ico{font-size:18px}
+  .settings-btn small{display:block;color:var(--muted);font-size:12.5px;margin-top:1px}
+
+  /* ---- Checklist / settings sheet ---- */
+  .sheet-backdrop{
+    position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:50;display:flex;align-items:flex-end;
+  }
+  .sheet{
+    background:var(--stone);width:100%;max-width:520px;margin:0 auto;border-radius:20px 20px 0 0;
+    padding:18px 20px calc(24px + env(safe-area-inset-bottom,0px));max-height:85vh;overflow-y:auto;
+  }
+  .sheet h2{font-size:19px;margin-bottom:4px}
+  .sheet p.sub{color:var(--muted);font-size:13.5px;margin:0 0 16px}
+  .check-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .check-item:last-child{border-bottom:none}
+  .check-item input{width:20px;height:20px;flex:none;margin-top:2px;accent-color:var(--fresco)}
+  .check-item div b{display:block;font-size:14.5px}
+  .check-item div span{font-size:13px;color:var(--muted)}
+  .sheet-close{
+    position:absolute;top:14px;right:16px;background:var(--card);border:1px solid var(--line);
+    width:32px;height:32px;border-radius:50%;font-size:16px;color:var(--muted);
+  }
+  .sheet-wrap{position:relative}
+
+  .voice-warn{
+    background:var(--brick-bg);color:var(--brick);border-radius:10px;padding:10px 12px;
+    font-size:13px;margin-top:14px;display:none;
+  }
+  .voice-warn.show{display:block}
+
+  /* ---- Ask panel ---- */
+  .ask-sheet{display:flex;flex-direction:column;max-height:78vh}
+  .ask-context{
+    font-size:13px;color:var(--muted);background:var(--stone-2);border-radius:10px;
+    padding:9px 12px;margin-bottom:12px;line-height:1.45;
+  }
+  .ask-log{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:2px 0 10px}
+  .ask-msg{border-radius:14px;padding:9px 13px;font-size:15px;line-height:1.45;max-width:88%}
+  .ask-user{align-self:flex-end;background:var(--fresco);color:#fff;border-bottom-right-radius:4px}
+  .ask-assistant{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:4px}
+  .ask-system{align-self:center;color:var(--muted);font-size:13.5px;text-align:center;background:none}
+  .ask-input-row{
+    display:flex;gap:8px;align-items:flex-end;background:var(--card);
+    border:1px solid var(--line);border-radius:16px;padding:6px 6px 6px 14px;margin-top:8px;
+  }
+  .ask-input-row textarea{
+    flex:1;border:none;background:none;resize:none;font-family:inherit;font-size:16px;
+    color:var(--ink);padding:8px 0;max-height:90px;outline:none;
+  }
+  .ask-input-row textarea::placeholder{color:var(--muted)}
+  .ask-input-row .send{
+    flex:none;background:var(--fresco);color:#fff;border:none;border-radius:12px;
+    width:40px;height:40px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .ask-input-row .send:disabled{opacity:0.35}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ================= Content ================= */
+var TRIP = {
+  title: "Arrivo a Firenze",
+  subtitle: "A slim prototype: three real moments from your first hours in Florence."
+};
+
+var SCENES = [
+  {
+    id: "airport",
+    title: "Aeroporto di Firenze",
+    eyebrow: "Day 1 · Arrival",
+    blurb: "You've landed at Peretola. Passport control, baggage claim, and finding a taxi into the city.",
+    turns: [
+      {type:"npc", it:"Passaporto, prego.", en:"Passport, please.", speaker:"Agente"},
+      {type:"prompt", en:"Give them your passport, and say 'here you are.'",
+        accepted:[["ecco"],["ecco il mio passaporto"],["eccolo"]],
+        hint:"Ecco = 'here it is.' You can say it alone.",
+        translation:"Here you are. / Here's my passport.",
+        traps:[
+          {re:/aqui|aquí/i, tag:"spanish", fb:"Aquí is Spanish for 'here.' In Italian it's ecco (when handing something over) or qui (when talking about location)."}
+        ]},
+      {type:"note", it:"L'agente controlla il passaporto e lo restituisce.", en:"The officer checks the passport and hands it back."},
+      {type:"npc", it:"Benvenuto in Italia. Qual è il motivo della visita?", en:"Welcome to Italy. What's the reason for your visit?", speaker:"Agente"},
+      {type:"prompt", en:"Why are you visiting?",
+        accepted:[["turismo"],["lavoro"]],
+        hint:"Turismo (tourism) or lavoro (work) — a one-word answer is fine.",
+        translation:"Tourism. / I'm here for tourism. / Work."},
+      {type:"npc", it:"Perfetto. Buona permanenza!", en:"Perfect. Enjoy your stay!", speaker:"Agente"},
+      {type:"note", it:"Ritirate il bagaglio e uscite verso i taxi.", en:"You collect your bag and head toward the taxi stand."},
+      {type:"npc", it:"Buonasera! Dove andiamo?", en:"Good evening! Where are we headed?", speaker:"Tassista"},
+      {type:"prompt", en:"Tell the driver: to the Hotel [name], please.",
+        accepted:[
+          ["all'hotel"],["all'albergo"],["andiamo","hotel"],["andiamo","albergo"]
+        ],
+        hint:"'To the...' = all' before a vowel: all'hotel, all'albergo.",
+        translation:"To the Hotel ___, please.",
+        traps:[
+          {re:/\ba l'/i, tag:"article", fb:"'a l'' isn't a real contraction — Italian uses all' (a + l' merged) before a vowel sound: all'hotel, all'albergo."}
+        ]},
+      {type:"npc", it:"Certo, salga pure.", en:"Sure, hop in.", speaker:"Tassista"},
+      {type:"prompt", en:"Ask how much it costs, roughly.",
+        accepted:[["quanto costa"],["quanto viene"]],
+        hint:"'How much does it cost' = quanto costa?",
+        translation:"How much does it cost, roughly?",
+        traps:[
+          {re:/cuanto/i, tag:"spanish", fb:"Cuánto is Spanish. Italian is quanto — same idea, different spelling."}
+        ]},
+      {type:"npc", it:"Sono circa venticinque euro, con il traffico. Ci vogliono venti minuti.", en:"It's about twenty-five euros, with traffic. It takes twenty minutes.", speaker:"Tassista"}
+    ]
+  },
+  {
+    id: "hotel",
+    title: "Check-in in albergo",
+    eyebrow: "Day 1 · Arrival",
+    blurb: "At the front desk: giving your name, a breakfast question, and asking staff where to eat tonight.",
+    turns: [
+      {type:"npc", it:"Buonasera, benvenuti! Ha una prenotazione?", en:"Good evening, welcome! Do you have a reservation?", speaker:"Receptionist"},
+      {type:"prompt", en:"Say yes, and give your name — 'my name is...'",
+        accepted:[["sì","mi chiamo"],["si","mi chiamo"]],
+        hint:"Mi chiamo... = 'my name is...'",
+        translation:"Yes, my name is ___.",
+        traps:[{re:/\bmi nombre es\b/i, tag:"spanish", fb:"Mi nombre es is Spanish. Italian uses mi chiamo, literally 'I call myself.'"}]},
+      {type:"npc", it:"Perfetto, un momento... Ecco, camera trecentododici, al terzo piano. La colazione è compresa, dalle sette alle dieci.", en:"Perfect, one moment... Here, room 312, on the third floor. Breakfast is included, from seven to ten.", speaker:"Receptionist"},
+      {type:"prompt", en:"Ask: is breakfast in the restaurant downstairs?",
+        accepted:[["la colazione","al ristorante"],["è al ristorante"],["dove","colazione"]],
+        hint:"'Downstairs' = al piano di sotto, but you can just ask dove ('where').",
+        translation:"Is breakfast in the restaurant downstairs?"},
+      {type:"npc", it:"Sì, esatto, al piano terra. Le serve altro?", en:"Yes, exactly, on the ground floor. Do you need anything else?", speaker:"Receptionist"},
+      {type:"prompt", en:"Ask (formally — Lei) if they have a dinner recommendation.",
+        accepted:[
+          ["ha un consiglio","cena"],
+          ["cosa mi consiglia","cena"],
+          ["ha un consiglio","stasera"]
+        ],
+        hint:"You used exactly this with the trattoria waiter: ha un consiglio...? / cosa mi consiglia?",
+        translation:"Do you have a recommendation for dinner? / What would you suggest for tonight?",
+        traps:[
+          {re:/\btu\b|\bconsigli\b(?!a)/i, tag:"formality", fb:"With hotel staff you don't know, stay in Lei. Consigli is the tu form — you want consiglia."}
+        ]},
+      {type:"npc", it:"Certo! Se vuole qualcosa di tipico e non troppo turistico, provi una trattoria in Oltrarno, dall'altra parte del fiume. È a dieci minuti a piedi.", en:"Of course! If you want something typical and not too touristy, try a trattoria in Oltrarno, on the other side of the river. It's a ten-minute walk.", speaker:"Receptionist"},
+      {type:"prompt", en:"Ask: do I need a reservation?",
+        accepted:[["devo prenotare"],["bisogna prenotare"],["serve la prenotazione"]],
+        hint:"You know bisogna from tonight — bisogna prenotare?",
+        translation:"Do I need to reserve? / Is a reservation necessary?",
+        traps:[{re:/necesito|necessito.*reserv/i, tag:"spanish", fb:"You've hit this one a few times tonight — necessito is Spanish-shaped. Try devo prenotare or bisogna prenotare."}]},
+      {type:"npc", it:"Dipende dal posto, ma se ci va presto, verso le sette, di solito trova un tavolo. Ecco la chiave, e buon soggiorno!", en:"It depends on the place, but if you go early, around seven, you'll usually find a table. Here's the key, and enjoy your stay!", speaker:"Receptionist"}
+    ]
+  },
+  {
+    id: "coffee",
+    title: "Un caffè in albergo",
+    eyebrow: "Day 1 · Arrival",
+    blurb: "You drop your bags and head to the hotel bar before heading out — a quick, familiar order.",
+    turns: [
+      {type:"npc", it:"Buonasera, cosa le porto?", en:"Good evening, what can I get you?", speaker:"Barista"},
+      {type:"prompt", en:"Order a cappuccino.",
+        accepted:[["vorrei un cappuccino"],["un cappuccino, per favore"]],
+        hint:"Same phrase you used at the Duomo café this morning.",
+        translation:"I'd like a cappuccino."},
+      {type:"npc", it:"Certo. Qualcos'altro? Un dolcino, magari?", en:"Of course. Anything else? A little something sweet, maybe?", speaker:"Barista"},
+      {type:"prompt", en:"Something else? Maybe a little sweet?",
+        accepted:[["no","grazie"],["cosa consiglia"]],
+        hint:"No, grazie, va bene così. / Sì, cosa consiglia?",
+        translation:"No thanks, that's fine. / Yes, what do you recommend?"},
+      {type:"npc", it:"Arriva subito!", en:"Coming right up!", speaker:"Barista"},
+      {type:"note", it:"Il barista prepara il cappuccino e lo porta al tavolo.", en:"The barista makes the cappuccino and brings it to your table."},
+      {type:"npc", it:"Ecco a lei. È il suo primo giorno a Firenze?", en:"Here you are. Is this your first day in Florence?", speaker:"Barista"},
+      {type:"prompt", en:"Say: yes, I just arrived. (Use passato prossimo: sono arrivato/a)",
+        accepted:[["sono appena arrivato"],["sono appena arrivata"],["sì","appena arrivato"],["sì","appena arrivata"]],
+        hint:"Appena = 'just.' Arrivare uses essere: sono arrivato/a, not ho arrivato.",
+        translation:"Yes, I just arrived.",
+        traps:[{re:/ho arrivato/i, tag:"tense", fb:"Arrivare takes essere, not avere — sono arrivato/a, like andare (sono andato) not like mangiare (ho mangiato)."}]},
+      {type:"npc", it:"Che bello! Si goda la vacanza. Se ha bisogno di qualcosa, siamo qui.", en:"How nice! Enjoy your vacation. If you need anything, we're here.", speaker:"Barista"}
+    ]
+  },
+  {
+    id: "host",
+    title: "Da Signora Rossi, la sera",
+    eyebrow: "Day 1 · Evening",
+    blurb: "Back at the B&B before heading out for the night — your host asks how the day went, and what's on for tomorrow.",
+    turns: [
+      {type:"npc", it:"Buonasera! Com'è andata la giornata?", en:"Good evening! How did the day go?", speaker:"Signora Rossi"},
+      {type:"prompt", en:"Tell her (passato prossimo): I arrived this morning, and it went well.",
+        accepted:[
+          ["sono arrivato","stamattina"],["sono arrivata","stamattina"],
+          ["sono arrivato","è andata bene"],["sono arrivata","è andata bene"]
+        ],
+        hint:"Arrivare takes essere: sono arrivato/a. 'It went well' = è andata bene.",
+        translation:"I arrived this morning, and it went well.",
+        traps:[{re:/ho arrivato/i, tag:"tense", fb:"Arrivare takes essere, not avere — sono arrivato/a, like andare, not like mangiare."}]},
+      {type:"npc", it:"Che bello! E domani, cosa farà?", en:"How nice! And tomorrow, what will you do?", speaker:"Signora Rossi"},
+      {type:"prompt", en:"Tell her (futuro semplice): Tomorrow I will visit the Uffizi.",
+        accepted:[["domani","visiterò"],["visiterò","uffizi"]],
+        hint:"Regular -are future: visiterò = 'I will visit.' One word, no 'vado a'.",
+        translation:"Tomorrow I will visit the Uffizi.",
+        traps:[{re:/voy a|voy\b/i, tag:"spanish", fb:"Voy a is Spanish. Italian futuro semplice is one word: visiterò — not vado a visitare."}]},
+      {type:"npc", it:"Ottima scelta. E dopo, tornerà qui per cena, o mangerà fuori?", en:"Great choice. And afterward, will you come back here for dinner, or eat out?", speaker:"Signora Rossi"},
+      {type:"prompt", en:"Will you come back here for dinner, or eat out?",
+        accepted:[["mangerò fuori"],["tornerò qui"],["non lo so"]],
+        hint:"Mangerò fuori. / Tornerò qui per cena. / Non lo so ancora.",
+        translation:"I'll eat out. / I'll come back here for dinner. / I don't know yet."},
+      {type:"npc", it:"Capisco. Se decide di uscire, ha già un posto in mente?", en:"I understand. If you decide to go out, do you already have a place in mind?", speaker:"Signora Rossi"},
+      {type:"prompt", en:"Ask her (formally — Lei): do you have a recommendation for a trattoria near the Uffizi?",
+        accepted:[
+          ["ha un consiglio","trattoria"],["cosa mi consiglia","trattoria"],
+          ["ha un consiglio","uffizi"]
+        ],
+        hint:"Reuse what worked at the front desk: ha un consiglio...? / cosa mi consiglia?",
+        translation:"Do you have a recommendation for a trattoria near the Uffizi?",
+        traps:[{re:/\btu\b|\bconsigli\b(?!a)/i, tag:"formality", fb:"Stay in Lei with your host too — consigli is the tu form; you want consiglia."}]},
+      {type:"npc", it:"Certo, provi 'Il Cantuccio', vicino a Ponte Vecchio — ci vogliono dieci minuti a piedi da qui. Domattina a che ora vuole fare colazione?", en:"Of course, try 'Il Cantuccio,' near Ponte Vecchio — it's a ten-minute walk from here. Tomorrow morning, what time would you like breakfast?", speaker:"Signora Rossi"},
+      {type:"prompt", en:"Ask: what time does breakfast start tomorrow?",
+        accepted:[["a che ora","colazione"],["quando","colazione"]],
+        hint:"A che ora...? = 'At what time...?'",
+        translation:"What time does breakfast start tomorrow?"},
+      {type:"npc", it:"Di solito dalle otto, ma se domani parte presto, gliela preparo anche prima. Buona serata, e buona bistecca!", en:"Usually from eight, but if you're leaving early tomorrow, I'll have it ready sooner. Have a good evening, and enjoy the steak!", speaker:"Signora Rossi"}
+    ]
+  }
+];
+
+/* ================= State & storage ================= */
+var STORAGE_KEY = "fi-game-progress-v1";
+var MISTAKE_KEY = "fi-game-mistakes-v1";
+var CHECK_KEY = "fi-game-preflight-v1";
+var MODE_KEY = "fi-game-inputmode-v1";
+
+function safeGet(key, fallback){
+  try{
+    var v = localStorage.getItem(key);
+    return v ? JSON.parse(v) : fallback;
+  }catch(e){ return fallback; }
+}
+function safeSet(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+}
+
+var progress = safeGet(STORAGE_KEY, {completedScenes:[]});
+var mistakeLog = safeGet(MISTAKE_KEY, []); // {tag, sceneId, it, ts}
+// Seed weak spots from tonight's real chat session, so the tracker isn't starting cold.
+var SEED_WEAKSPOTS = ["spanish","tense","formality","article"];
+
+var checklist = safeGet(CHECK_KEY, {kbd:false, tts:false, dict:false});
+var revealedText = {}; // key: sceneIdx-turnIdx -> true once player has peeked at the Italian text
+var revealedTranslation = {}; // key: sceneIdx-turnIdx -> true once player has asked for the English
+
+var view = {screen:"home", sceneIdx:0, turnIdx:0, sceneMistakes:0, sceneCorrect:0, showSheet:false};
+
+/* ================= Speech ================= */
+var RATE_NORMAL = 1.45; // slowed slightly from 1.65 — still brisk/natural, easier to follow
+var RATE_SLOW = 0.8;    // deliberately slow, for picking apart pronunciation on one word/phrase
+var italianVoices = []; // ALL matching voices on this device, not just the first — some devices offer several
+var voicesEverLoaded = false;
+function loadVoice(){
+  if(!('speechSynthesis' in window)) return;
+  var voices = speechSynthesis.getVoices();
+  if(voices && voices.length) voicesEverLoaded = true;
+  italianVoices = (voices||[]).filter(function(v){ return v.lang && v.lang.toLowerCase().indexOf('it') === 0; });
+}
+if('speechSynthesis' in window){
+  loadVoice();
+  speechSynthesis.onvoiceschanged = loadVoice;
+  var voicePollTries = 0;
+  var voicePoll = setInterval(function(){
+    voicePollTries++;
+    loadVoice();
+    if(italianVoices.length || voicePollTries > 10) clearInterval(voicePoll);
+  }, 300);
+}
+// Most devices only expose ONE Italian voice, so voice choice alone can't tell characters
+// apart — pitch is the reliable differentiator across devices. Deterministic (hashed on the
+// character's name, not order-of-first-use) so the same character always sounds the same.
+var PITCHES = [1.0, 1.22, 0.82, 1.1, 0.92, 1.3];
+function hashStr(s){
+  var h = 0;
+  for(var i=0; i<s.length; i++){ h = (h*31 + s.charCodeAt(i)) | 0; }
+  return Math.abs(h);
+}
+function voiceProfileFor(speaker){
+  if(!speaker) return {voice:italianVoices[0]||null, pitch:1.0};
+  var h = hashStr(speaker);
+  var voice = italianVoices.length ? italianVoices[h % italianVoices.length] : null;
+  var pitch = PITCHES[h % PITCHES.length];
+  return {voice:voice, pitch:pitch};
+}
+function makeUtterance(text, rate, speaker){
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'it-IT';
+  u.rate = rate || RATE_NORMAL;
+  var profile = voiceProfileFor(speaker);
+  u.pitch = profile.pitch;
+  if(profile.voice){
+    try{ u.voice = profile.voice; }catch(e){ /* fall back to the browser's default voice for this lang */ }
+  }
+  return u;
+}
+// Manual tap-to-hear: interrupts whatever's playing and speaks immediately.
+function speak(text, rate, speaker){
+  if(!('speechSynthesis' in window)) { showVoiceWarn('unsupported'); return; }
+  loadVoice();
+  try{ speechSynthesis.cancel(); }catch(e){}
+  if(!italianVoices.length && voicesEverLoaded) showVoiceWarn('novoice');
+  else if(!italianVoices.length && !voicesEverLoaded) { showVoiceWarn('blocked'); return; }
+  try{ speechSynthesis.speak(makeUtterance(text, rate, speaker)); }catch(e){ showVoiceWarn('blocked'); }
+}
+// Autoplay for listen mode: queues instead of interrupting, so consecutive NPC lines play in order.
+function queueSpeak(text, rate, speaker){
+  if(!('speechSynthesis' in window)) return;
+  loadVoice();
+  if(!italianVoices.length && !voicesEverLoaded) return; // nothing to play with; stay quiet rather than warn repeatedly
+  try{ speechSynthesis.speak(makeUtterance(text, rate, speaker)); }catch(e){}
+}
+
+/* ================= Speech-to-text (mic input) ================= */
+var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+var recognizer = null;
+var recognizing = false;
+
+function micSupported(){ return !!SpeechRec; }
+
+function micErrorMessage(err){
+  if(err === 'not-allowed' || err === 'permission-denied') return "Microphone access is blocked. Allow it for this site in your browser settings, or type your answer instead.";
+  if(err === 'network') return "Voice input needs a connection right now. Type instead, or dictate with your keyboard's own mic button, which can work offline.";
+  if(err === 'no-speech') return "Didn't catch anything — try again, a bit closer to the mic.";
+  return "Voice input hit a snag. Type instead, or try the mic again.";
+}
+
+function startMic(ta, statusEl, micBtn){
+  if(!SpeechRec) return;
+  try{
+    recognizer = new SpeechRec();
+    recognizer.lang = 'it-IT';
+    recognizer.interimResults = true;
+    recognizer.maxAlternatives = 1;
+    recognizer.continuous = false;
+    recognizer.onresult = function(e){
+      var text = '';
+      for(var i=0; i<e.results.length; i++) text += e.results[i][0].transcript;
+      ta.value = text;
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 90) + 'px';
+    };
+    recognizer.onerror = function(e){
+      recognizing = false;
+      micBtn.classList.remove('listening');
+      statusEl.textContent = micErrorMessage(e.error);
+    };
+    recognizer.onend = function(){
+      recognizing = false;
+      micBtn.classList.remove('listening');
+    };
+    recognizer.start();
+    recognizing = true;
+    micBtn.classList.add('listening');
+    statusEl.textContent = "Ascolto… parla pure.";
+  }catch(e){
+    recognizing = false;
+    statusEl.textContent = "Couldn't start the mic. Type your answer instead.";
+  }
+}
+function stopMic(micBtn, statusEl){
+  if(recognizer){ try{ recognizer.stop(); }catch(e){} }
+  recognizing = false;
+  if(micBtn) micBtn.classList.remove('listening');
+  if(statusEl) statusEl.textContent = '';
+}
+var voiceWarnShown = false;
+var WARN_MESSAGES = {
+  novoice: "No Italian voice is installed on this device. Download one in your text-to-speech settings, then reopen this page.",
+  blocked: "This page can't reach speech playback here — try opening the link in Chrome or Safari directly instead of the in-app preview.",
+  unsupported: "This browser doesn't support text-to-speech."
+};
+function showVoiceWarn(reason){
+  voiceWarnShown = true;
+  var el = document.getElementById('voice-warn');
+  if(el){
+    el.textContent = WARN_MESSAGES[reason] || WARN_MESSAGES.blocked;
+    el.classList.add('show');
+  }
+}
+
+/* ================= Ask Claude (sample capability) ================= */
+// Resolves once, asynchronously; null if this view can't sample (older host, declined,
+// or not served as an Artifact at all). The Ask button/panel design for its absence.
+var claudeSample = null;
+if(window.claude && typeof window.claude.use === 'function'){
+  window.claude.use('sample').then(function(s){ claudeSample = s; }).catch(function(){});
+}
+
+/* ================= Answer checking ================= */
+function stripAccents(s){
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+function normalize(s){
+  return stripAccents(s.toLowerCase())
+    .replace(/['’]/g," ")
+    .replace(/[^a-z0-9\s]/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+function wordSet(s){ return normalize(s).split(" ").filter(Boolean); }
+
+// accepted: array of alternatives, each alternative is array of required key phrases (all must appear, loosely)
+function checkAnswer(input, prompt){
+  var norm = normalize(input);
+  // 1. trap check first — specific, targeted feedback
+  if(prompt.traps){
+    for(var t=0; t<prompt.traps.length; t++){
+      if(prompt.traps[t].re.test(input)){
+        return {ok:false, trap:prompt.traps[t]};
+      }
+    }
+  }
+  // 2. accepted-answer loose match
+  var accepted = prompt.accepted || [];
+  for(var a=0; a<accepted.length; a++){
+    var reqs = accepted[a];
+    var allFound = reqs.every(function(req){
+      var reqNorm = normalize(req);
+      // loose containment: every word of the required phrase should appear somewhere in input
+      var reqWords = reqNorm.split(" ").filter(Boolean);
+      return reqWords.every(function(w){ return norm.indexOf(w) !== -1; });
+    });
+    if(allFound) return {ok:true};
+  }
+  return {ok:false};
+}
+
+function tagMistake(sceneId, tag, userText, correctText){
+  mistakeLog.push({tag:tag, sceneId:sceneId, userText:userText||'', correctText:correctText||'', ts:Date.now()});
+  safeSet(MISTAKE_KEY, mistakeLog);
+}
+
+/* ================= Rendering ================= */
+var app = document.getElementById('app');
+
+function render(){
+  if(view.screen === 'home') return renderHome();
+  if(view.screen === 'scene') return renderScene();
+  if(view.screen === 'sceneEnd') return renderSceneEnd();
+}
+
+function speakerBtns(text, big){
+  var sz = big ? ' style="font-size:26px"' : '';
+  return '<button class="hear-btn" data-say="'+encodeURIComponent(text)+'" data-rate="normal" aria-label="Hear this in Italian"'+sz+'>'+iconSvg('speaker')+'</button>'+
+    '<button class="hear-btn slow" data-say="'+encodeURIComponent(text)+'" data-rate="slow" aria-label="Hear this slowly">'+iconSvg('turtle')+'</button>';
+}
+
+// Maps our internal icon keys to real Lucide icon names (verified to exist at lucide.dev/icons/<name>).
+var LUCIDE_NAMES = {
+  settings: 'settings',
+  speaker: 'volume-2',
+  check: 'check',
+  map: 'map',
+  earOn: 'ear',
+  earOff: 'ear-off',
+  turtle: 'turtle',
+  text: 'file-text',
+  mic: 'mic',
+  chevronLeft: 'chevron-left',
+  send: 'send',
+  close: 'x',
+  ask: 'message-circle-question',
+  translate: 'languages'
+};
+function iconSvg(name){
+  var lucideName = LUCIDE_NAMES[name];
+  if(!lucideName) return '';
+  // Rendered as a placeholder <i>; ensureIcons() (called after every DOM write) converts
+  // these into real inline SVGs via lucide.createIcons(). If the Lucide script failed to
+  // load for any reason, this tag stays empty but the button itself is still there and
+  // clickable — a missing glyph, not a missing control.
+  return '<i data-lucide="'+lucideName+'" aria-hidden="true"></i>';
+}
+// Lucide only turns <i data-lucide="..."> into SVG for elements present in the DOM *right now*,
+// so every function that writes new icon-bearing HTML must call this afterward.
+function ensureIcons(){
+  if(window.lucide && typeof lucide.createIcons === 'function'){
+    try{ lucide.createIcons(); }catch(e){}
+  }
+}
+
+function renderHome(){
+  window.scrollTo(0, 0);
+  var doneCount = progress.completedScenes.length;
+  var html = '<div class="home">';
+  html += '<div class="home-hero"><div class="kicker">Passaporto — Firenze</div>';
+  html += '<h1>'+TRIP.title+'</h1><p>'+TRIP.subtitle+'</p></div>';
+
+  html += '<ul class="stops">';
+  SCENES.forEach(function(sc, i){
+    var isDone = progress.completedScenes.indexOf(sc.id) !== -1;
+    var isLocked = false; // prototype: nothing locked, so you can freely explore
+    var stateClass = isDone ? 'done' : (i===0 || progress.completedScenes.indexOf(SCENES[i-1] && SCENES[i-1].id) !== -1 ? 'active' : '');
+    html += '<li class="'+stateClass+'">';
+    html += '<div class="stop-card" data-scene="'+i+'">';
+    html += '<div class="stop-title">'+sc.title+'</div>';
+    html += '<div class="stop-meta">'+sc.eyebrow+'</div>';
+    if(isDone) html += '<span class="stop-status">'+iconSvg('check')+' Completed — tap to replay</span>';
+    html += '</div></li>';
+  });
+  html += '</ul>';
+
+  var mCount = mistakeLog.length;
+  html += '<button class="settings-btn" id="btn-preflight"><span class="ico">'+iconSvg('settings')+'</span><span><b>Pre-flight checklist</b><small>Set up offline Italian voice typing &amp; audio before you fly</small></span></button>';
+  if(mCount > 0){
+    html += '<button class="settings-btn" id="btn-review"><span class="ico">'+iconSvg('map')+'</span><span><b>Your weak spots ('+mCount+')</b><small>What to drill next, based on real mistakes tonight</small></span></button>';
+  }
+  html += '</div>';
+  app.innerHTML = html;
+  ensureIcons();
+
+  document.querySelectorAll('.stop-card').forEach(function(el){
+    el.addEventListener('click', function(){
+      var i = parseInt(el.getAttribute('data-scene'),10);
+      startScene(i);
+    });
+  });
+  var pf = document.getElementById('btn-preflight');
+  if(pf) pf.addEventListener('click', openPreflight);
+  var rv = document.getElementById('btn-review');
+  if(rv) rv.addEventListener('click', openReview);
+}
+
+function advanceToInteractive(scene, idx){
+  while(idx < scene.turns.length && scene.turns[idx].type !== 'prompt' && scene.turns[idx].type !== 'choice'){
+    idx++;
+  }
+  return idx;
+}
+
+function startScene(i){
+  view.screen = 'scene';
+  view.sceneIdx = i;
+  view.turnIdx = advanceToInteractive(SCENES[i], 0);
+  view.sceneMistakes = 0;
+  view.sceneCorrect = 0;
+  render();
+}
+
+function goHome(){
+  if(recognizing) stopMic(null, null);
+  view.screen = 'home';
+  render();
+}
+
+function renderScene(){
+  var scene = SCENES[view.sceneIdx];
+  var doneIdx = view.turnIdx;
+
+  var html = '<header><div class="topbar">';
+  html += '<button class="icon-btn" id="btn-back" aria-label="Back to map">'+iconSvg('chevronLeft')+'</button>';
+  html += '<h1>'+scene.title+'</h1>';
+  html += '<button class="icon-btn" id="btn-ask" aria-label="Ask about this scene" title="Ask">'+iconSvg('ask')+'</button>';
+  html += '<button class="icon-btn" id="btn-settings2" aria-label="Settings">'+iconSvg('settings')+'</button>';
+  html += '</div>';
+  html += '<div class="trail">';
+  SCENES.forEach(function(sc, i){
+    var cls = i < view.sceneIdx || progress.completedScenes.indexOf(sc.id) !== -1 ? 'done' : (i===view.sceneIdx ? 'current' : '');
+    html += '<div class="stop '+cls+'"></div>';
+  });
+  html += '</div></header>';
+
+  html += '<div class="scene-hero"><div class="scene-eyebrow">'+scene.eyebrow+'</div>';
+  html += '<h2>'+scene.title+'</h2><p>'+scene.blurb+'</p></div>';
+
+  html += '<main id="log">';
+  for(var i=0; i<=view.turnIdx && i<scene.turns.length; i++){
+    html += renderTurn(scene.turns[i], i, scene);
+    if(i === view.turnIdx) break; // stop right after current interactive turn until answered
+  }
+  html += '</main>';
+
+  html += renderComposer(scene, view.turnIdx);
+  html += '<div id="voice-warn" class="voice-warn" style="margin:0 16px 12px">Couldn\'t find an Italian voice on this device. Downloading one in your text-to-speech settings will make tap-to-hear work.</div>';
+
+  app.innerHTML = html;
+  ensureIcons();
+  document.getElementById('btn-back').addEventListener('click', goHome);
+  var askBtn = document.getElementById('btn-ask');
+  if(askBtn) askBtn.addEventListener('click', function(){ openAskPanel(scene); });
+  var st2 = document.getElementById('btn-settings2');
+  if(st2) st2.addEventListener('click', openPreflight);
+  wireLog();
+  wireComposer(scene);
+  scrollLogToBottom();
+}
+
+// Keeps the conversation readable as it grows: brings new content into view while
+// keeping the player's most recent answer at the TOP of the screen (not the very
+// bottom of the page), so what follows it is visible without losing that answer.
+// Accounts for the sticky header, which would otherwise cover the scrolled-to turn.
+function scrollLogToBottom(){
+  var players = document.querySelectorAll('.turn.player');
+  if(!players.length){ window.scrollTo(0, 0); return; }
+  var target = players[players.length - 1];
+  var header = document.querySelector('header');
+  var headerH = header ? header.getBoundingClientRect().height : 0;
+  var targetTop = target.getBoundingClientRect().top + window.scrollY;
+  window.scrollTo(0, Math.max(0, targetTop - headerH - 8));
+}
+
+var turnAnswered = {}; // key: sceneIdx-turnIdx -> {ok, chosenText}
+
+function renderTurn(turn, idx, scene){
+  var key = view.sceneIdx+'-'+idx;
+  if(turn.type === 'npc'){
+    // Italian text is always hidden until the user taps the reveal icon — this is the
+    // permanent default, not tied to listen mode (listen mode only controls autoplay).
+    // The English translation is a SEPARATE, independent toggle — a player may want the
+    // gloss without ever revealing the written Italian.
+    var revealedIt = !!revealedText[key];
+    var revealedEn = !!revealedTranslation[key];
+    var wide = revealedIt || revealedEn;
+    var bubbleInner = '<div class="icon-row">'+
+      '<button class="hear-btn icon-lg" data-say="'+encodeURIComponent(turn.it)+'" data-rate="normal" data-speaker="'+encodeURIComponent(turn.speaker||'')+'" aria-label="Hear this in Italian">'+iconSvg('speaker')+'</button>'+
+      '<div class="right-icons">'+
+        '<button class="hear-btn icon-lg slow" data-say="'+encodeURIComponent(turn.it)+'" data-rate="slow" data-speaker="'+encodeURIComponent(turn.speaker||'')+'" aria-label="Hear this slowly">'+iconSvg('turtle')+'</button>'+
+        (revealedIt ? '' : '<button class="hear-btn icon-lg reveal-text" data-reveal="'+key+'" aria-label="Show the Italian text" title="Show text">'+iconSvg('text')+'</button>')+
+        (turn.en && !revealedEn ? '<button class="hear-btn icon-lg" data-translate="'+key+'" aria-label="Show English translation" title="Translate">'+iconSvg('translate')+'</button>' : '')+
+      '</div></div>';
+    if(revealedIt) bubbleInner += '<div class="npc-text">'+turn.it+'</div>';
+    if(revealedEn && turn.en) bubbleInner += '<div class="npc-text" style="opacity:0.7;font-style:italic">'+turn.en+'</div>';
+    return '<div class="turn npc'+(wide?' npc-wide':'')+'" data-idx="'+idx+'">'+
+      '<div class="who">'+(turn.speaker||'')+'</div>'+
+      '<div class="bubble bubble-npc">'+bubbleInner+'</div></div>';
+  }
+  if(turn.type === 'note'){
+    var noteRevealed = !!revealedTranslation[key];
+    var html = '<div class="note-row"><div class="note-text">'+turn.it+'</div>'+
+      (turn.en && !noteRevealed ? '<button class="hear-btn note-translate" data-translate="'+key+'" aria-label="Show English">'+iconSvg('translate')+'</button>' : '')+
+      '</div>';
+    if(noteRevealed && turn.en) html += '<div class="note-en">'+turn.en+'</div>';
+    return '<div class="note" data-idx="'+idx+'">'+html+'</div>';
+  }
+  if(turn.type === 'prompt' || turn.type === 'choice'){
+    var ans = turnAnswered[key];
+    if(!ans) return ''; // not answered yet, composer handles input
+    var out = '<div class="turn player" data-idx="'+idx+'">';
+    out += '<div class="who">Tu</div>';
+    out += '<div class="bubble">'+speakerBtns(ans.displayText, true)+'<span>'+ans.displayText+'</span></div>';
+    out += '</div>';
+    if(ans.ok){
+      out += '<div class="correct-tag">'+iconSvg('check')+' Correct</div>';
+    } else {
+      out += '<div class="fix"><div class="fix-label">Try instead</div>';
+      out += '<div class="fix-line">'+speakerBtns(ans.correction, true)+'<span>'+ans.correction+'</span></div>';
+      if(ans.why) out += '<div class="fix-why">'+ans.why+'</div>';
+      out += '</div>';
+    }
+    return out;
+  }
+  return '';
+}
+
+// Persists across turns/scenes AND page reloads — not just in-memory state, since a
+// reload (e.g. this artifact being republished) must not silently reset the user's choice.
+var inputMode = safeGet(MODE_KEY, 'mic'); // 'mic' | 'text'
+
+function renderComposer(scene, idx){
+  var turn = scene.turns[idx];
+  var key = view.sceneIdx+'-'+idx;
+  if(!turn || (turn.type !== 'prompt' && turn.type !== 'choice')) {
+    // auto-advance non-interactive turns happens in JS after render; if we've reached the end, show scene-end button
+    return '';
+  }
+  if(turnAnswered[key]) return ''; // already answered, waiting to advance (handled by continue button below in log flow)
+
+  var html = '<div class="composer">';
+
+  if(turn.type === 'choice'){
+    html += '<div style="padding:0 2px 8px;font-size:13.5px;color:var(--muted)">'+turn.en+'</div>';
+    html += '<div class="tiles" style="justify-content:flex-start">';
+    turn.options.forEach(function(opt, oi){
+      html += '<button class="tile" data-choice="'+oi+'">'+opt.it+'</button>';
+    });
+    html += '</div></div>';
+    return html;
+  }
+
+  var micOk = micSupported();
+  if(inputMode === 'mic' && micOk){
+    html += '<div class="mic-row">';
+    html += '<button class="mic-big" id="btn-mic-big" aria-label="Speak your answer">'+iconSvg('mic')+'</button>';
+    html += '<button class="mode-switch" id="btn-switch-text">Digita invece</button>';
+    html += '</div>';
+  } else {
+    html += '<div class="composer-inner">';
+    if(micOk) html += '<button class="mode-switch-icon" id="btn-switch-mic" aria-label="Use microphone" title="Use microphone">'+iconSvg('mic')+'</button>';
+    html += '<textarea id="answer-input" rows="1" placeholder="Scrivi in italiano…" autocapitalize="sentences"></textarea>';
+    html += '<button class="send" id="btn-send" aria-label="Send">'+iconSvg('send')+'</button>';
+    html += '</div>';
+  }
+  html += '<div class="mic-status" id="composer-status"></div>';
+  html += '</div>';
+  return html;
+}
+
+function wireLog(){
+  document.querySelectorAll('[data-say]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var rate = btn.getAttribute('data-rate') === 'slow' ? RATE_SLOW : RATE_NORMAL;
+      var speaker = btn.getAttribute('data-speaker') ? decodeURIComponent(btn.getAttribute('data-speaker')) : null;
+      speak(decodeURIComponent(btn.getAttribute('data-say')), rate, speaker);
+    });
+  });
+  document.querySelectorAll('[data-reveal]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      revealedText[btn.getAttribute('data-reveal')] = true;
+      var scene = SCENES[view.sceneIdx];
+      var idx = parseInt(btn.getAttribute('data-reveal').split('-')[1],10);
+      var turnEl = document.querySelector('.turn.npc[data-idx="'+idx+'"]');
+      if(turnEl) turnEl.outerHTML = renderTurn(scene.turns[idx], idx, scene);
+      wireLog();
+      ensureIcons();
+    });
+  });
+  document.querySelectorAll('[data-translate]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var key = btn.getAttribute('data-translate');
+      revealedTranslation[key] = true;
+      var scene = SCENES[view.sceneIdx];
+      var idx = parseInt(key.split('-')[1],10);
+      var el = document.querySelector('.turn.npc[data-idx="'+idx+'"]') || document.querySelector('.note[data-idx="'+idx+'"]');
+      if(el) el.outerHTML = renderTurn(scene.turns[idx], idx, scene);
+      wireLog();
+      ensureIcons();
+    });
+  });
+}
+
+function wireComposer(scene){
+  var idx = view.turnIdx;
+  var turn = scene.turns[idx];
+  if(!turn) return;
+
+  if(turn.type === 'choice'){
+    document.querySelectorAll('[data-choice]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var oi = parseInt(btn.getAttribute('data-choice'),10);
+        var opt = turn.options[oi];
+        submitAnswer(scene, idx, {ok:true, displayText:opt.it});
+      });
+    });
+    return;
+  }
+
+  var micOk = micSupported();
+  if(inputMode === 'mic' && micOk){
+    wireMicComposer(scene, turn, idx);
+  } else {
+    wireTextComposer(scene, turn, idx);
+  }
+}
+
+// Switches the persistent input mode and re-renders just the composer, in place.
+function switchInputMode(mode, scene){
+  inputMode = mode;
+  safeSet(MODE_KEY, inputMode);
+  if(recognizing) stopMic(null, null);
+  var idx = view.turnIdx;
+  var oldComposer = document.querySelector('.composer');
+  if(oldComposer) oldComposer.outerHTML = renderComposer(scene, idx);
+  wireComposer(scene);
+  ensureIcons();
+}
+
+function wireMicComposer(scene, turn, idx){
+  var micBtn = document.getElementById('btn-mic-big');
+  var micStatus = document.getElementById('composer-status');
+  var switchBtn = document.getElementById('btn-switch-text');
+  if(switchBtn) switchBtn.addEventListener('click', function(){ switchInputMode('text', scene); });
+  if(!micBtn) return;
+  micBtn.addEventListener('click', function(){
+    if(recognizing){ stopMic(micBtn, micStatus); return; }
+    startMicAuto(scene, turn, idx, micBtn, micStatus);
+  });
+}
+
+// Tap once to listen; the answer submits itself as soon as speech recognition ends,
+// so there's no separate send step while in mic mode.
+function startMicAuto(scene, turn, idx, micBtn, micStatus){
+  if(!SpeechRec) return;
+  var finalText = '';
+  try{
+    recognizer = new SpeechRec();
+    recognizer.lang = 'it-IT';
+    recognizer.interimResults = true;
+    recognizer.maxAlternatives = 1;
+    recognizer.continuous = false;
+    recognizer.onresult = function(e){
+      var text = '';
+      for(var i=0; i<e.results.length; i++) text += e.results[i][0].transcript;
+      finalText = text;
+      micStatus.textContent = text;
+    };
+    recognizer.onerror = function(e){
+      recognizing = false;
+      micBtn.classList.remove('listening');
+      micStatus.textContent = micErrorMessage(e.error);
+    };
+    recognizer.onend = function(){
+      recognizing = false;
+      micBtn.classList.remove('listening');
+      var val = finalText.trim();
+      if(val){
+        micStatus.textContent = '';
+        evaluateAndSubmit(scene, idx, turn, val);
+      }
+    };
+    recognizer.start();
+    recognizing = true;
+    micBtn.classList.add('listening');
+    micStatus.textContent = "Ascolto…";
+  }catch(e){
+    recognizing = false;
+    micStatus.textContent = "Couldn't start the mic. Tap \u201cDigita invece\u201d to type.";
+  }
+}
+
+function wireTextComposer(scene, turn, idx){
+  var ta = document.getElementById('answer-input');
+  var sendBtn = document.getElementById('btn-send');
+  var switchBtn = document.getElementById('btn-switch-mic');
+  if(switchBtn) switchBtn.addEventListener('click', function(){ switchInputMode('mic', scene); });
+  if(ta){
+    ta.addEventListener('input', function(){
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 90) + 'px';
+    });
+    ta.focus({preventScroll:true});
+  }
+  function doSend(){
+    var val = ta.value.trim();
+    if(!val) return;
+    evaluateAndSubmit(scene, idx, turn, val);
+  }
+  if(sendBtn) sendBtn.addEventListener('click', doSend);
+  if(ta) ta.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); doSend(); }
+  });
+}
+
+function guessTag(turn){
+  return "vocabulary";
+}
+function pickCorrection(turn){
+  if(!turn.accepted || !turn.accepted.length) return turn.translation || '';
+  // build a natural-looking sentence from the first accepted alternative's key phrase(s)
+  return turn.accepted[0].join(" ").replace(/\s+/g," ").trim();
+}
+
+// A wrong answer does NOT advance the conversation — it shows the fix and re-opens the
+// SAME prompt so the learner has to produce the correct answer before the NPC continues.
+// turnAnswered[key] is only ever set once the answer is actually correct.
+var turnHadMistake = {}; // key -> true once at least one wrong attempt happened on this turn
+
+function submitAnswer(scene, idx, ans){
+  var key = view.sceneIdx+'-'+idx;
+  if(ans.ok){
+    turnAnswered[key] = ans;
+    if(turnHadMistake[key]) view.sceneMistakes++; else view.sceneCorrect++;
+    var next = idx + 1;
+    view.turnIdx = next;
+    renderSceneAppend(scene, ans, next);
+  } else {
+    turnHadMistake[key] = true;
+    appendWrongAttempt(scene, idx, ans);
+  }
+}
+
+// Appends the wrong attempt + correction to the log (kept as visible history), then
+// re-renders a fresh composer for the SAME turn so the learner can retry.
+function appendWrongAttempt(scene, idx, ans){
+  var log = document.getElementById('log');
+  var html = '<div class="turn player" data-idx="'+idx+'">'+
+    '<div class="who">Tu</div>'+
+    '<div class="bubble">'+speakerBtns(ans.displayText, true)+'<span>'+ans.displayText+'</span></div></div>';
+  html += '<div class="fix"><div class="fix-label">Try instead</div>';
+  html += '<div class="fix-line">'+speakerBtns(ans.correction, true)+'<span>'+ans.correction+'</span></div>';
+  if(ans.why) html += '<div class="fix-why">'+ans.why+'</div>';
+  html += '</div>';
+  log.insertAdjacentHTML('beforeend', html);
+  wireLog();
+
+  if(recognizing) stopMic(null, null);
+  var oldComposer = document.querySelector('.composer');
+  if(oldComposer) oldComposer.outerHTML = renderComposer(scene, idx);
+  wireComposer(scene);
+  ensureIcons();
+  scrollLogToBottom();
+}
+
+function setComposerChecking(checking, msg){
+  var status = document.getElementById('composer-status');
+  if(status) status.textContent = checking ? (msg || 'Checking…') : '';
+  ['btn-mic-big','btn-send','btn-switch-text','btn-switch-mic','answer-input'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.disabled = checking;
+  });
+}
+
+function localCheck(turn, val){
+  var result = checkAnswer(val, turn);
+  if(result.ok) return {ok:true};
+  if(result.trap) return {ok:false, correction:pickCorrection(turn), why:result.trap.fb, tag:result.trap.tag};
+  return {ok:false, correction:pickCorrection(turn), why:null, tag:guessTag(turn)};
+}
+
+// Context for the live judge: the last couple of NPC lines, the English instruction the
+// learner was given, and a reference answer — so "correct" means "a natural answer to
+// THIS prompt," not just a string match.
+function buildJudgePrompt(scene, idx, turn, val){
+  var lines = ["You are checking a language learner's spoken/typed Italian answer in a scripted practice conversation. Be a fair, encouraging judge: accept ANY natural, grammatically correct way to answer — not only one exact phrasing. Reply with ONLY a JSON object, no other text: {\"correct\": boolean, \"correctedItalian\": string, \"feedback\": string, \"tag\": \"spanish\"|\"tense\"|\"formality\"|\"article\"|\"vocabulary\"}. If correct is true, correctedItalian can just repeat a clean version of their answer and feedback can be empty. If correct is false, correctedItalian must be a natural, complete, correct Italian answer to the SAME prompt, and feedback is exactly one short sentence naming the specific issue — no lectures."];
+  var ctx = [];
+  for(var i = Math.max(0, idx - 2); i <= idx; i++){
+    var t = scene.turns[i];
+    if(t && t.type === 'npc') ctx.push('Character (' + (t.speaker||'NPC') + ') said: "' + t.it + '"');
+  }
+  ctx.push('The learner was asked, in English: "' + turn.en + '"');
+  if(turn.translation) ctx.push('A natural correct answer would be along the lines of: ' + turn.translation);
+  ctx.push('The learner answered: "' + val + '"');
+  lines.push(ctx.join('\n'));
+  return lines.join('\n\n');
+}
+
+// One answer goes through this path whether it came from the mic or from typing. Judges
+// with live Claude (sample) when available — real language understanding instead of
+// keyword matching — and falls back to the local matcher (works fully offline) whenever
+// sample is unavailable or fails, so the core loop never depends on a network connection.
+function evaluateAndSubmit(scene, idx, turn, val){
+  function finishLocal(){
+    setComposerChecking(false);
+    var r = localCheck(turn, val);
+    if(r.ok){
+      submitAnswer(scene, idx, {ok:true, displayText:val});
+    } else {
+      tagMistake(scene.id, r.tag, val, r.correction);
+      submitAnswer(scene, idx, {ok:false, displayText:val, correction:r.correction, why:r.why});
+    }
+  }
+
+  if(!claudeSample){ finishLocal(); return; }
+
+  setComposerChecking(true);
+  claudeSample.json(buildJudgePrompt(scene, idx, turn, val), {modelTier:'quick', cache:false})
+    .then(function(data){
+      setComposerChecking(false);
+      if(!data || typeof data.correct !== 'boolean'){ finishLocal(); return; }
+      if(data.correct){
+        submitAnswer(scene, idx, {ok:true, displayText:val});
+      } else {
+        var correction = data.correctedItalian || pickCorrection(turn);
+        var tag = data.tag || guessTag(turn);
+        tagMistake(scene.id, tag, val, correction);
+        submitAnswer(scene, idx, {ok:false, displayText:val, correction:correction, why:data.feedback || null});
+      }
+    })
+    .catch(function(){ finishLocal(); }); // any sample failure — quietly fall back, never block the learner
+}
+
+// Instead of a full re-render (which would lose composer focus jank), append then decide composer
+function renderSceneAppend(scene, ans, nextIdx){
+  var log = document.getElementById('log');
+  var key = (view.sceneIdx)+'-'+(nextIdx-1);
+  // render the just-answered player turn + any following NPC/note turns until next interactive turn
+  var frag = renderTurn(scene.turns[nextIdx-1], nextIdx-1, scene);
+  log.insertAdjacentHTML('beforeend', frag);
+
+  var i = nextIdx;
+  while(i < scene.turns.length && scene.turns[i].type !== 'prompt' && scene.turns[i].type !== 'choice'){
+    log.insertAdjacentHTML('beforeend', renderTurn(scene.turns[i], i, scene));
+    i++;
+  }
+  view.turnIdx = i;
+  wireLog();
+
+  // replace composer
+  if(recognizing) stopMic(null, null);
+  var oldComposer = document.querySelector('.composer');
+  if(oldComposer) oldComposer.remove();
+  var warn = document.getElementById('voice-warn');
+
+  if(i >= scene.turns.length){
+    // scene finished — show a continue button
+    var endHtml = '<div class="composer"><button class="btn" id="btn-scene-done">See how it went</button></div>';
+    document.body.querySelector('#app').insertAdjacentHTML('beforeend', '');
+    var main = document.getElementById('log');
+    main.insertAdjacentHTML('afterend', endHtml);
+    document.getElementById('btn-scene-done').addEventListener('click', function(){
+      finishScene(scene);
+    });
+  } else {
+    var composerHtml = renderComposer(scene, i);
+    document.getElementById('log').insertAdjacentHTML('afterend', composerHtml);
+    wireComposer(scene);
+  }
+  if(warn) warn.remove();
+  document.body.insertAdjacentHTML('beforeend', '');
+  ensureIcons();
+  scrollLogToBottom();
+}
+
+function finishScene(scene){
+  if(progress.completedScenes.indexOf(scene.id) === -1){
+    progress.completedScenes.push(scene.id);
+    safeSet(STORAGE_KEY, progress);
+  }
+  view.screen = 'sceneEnd';
+  render();
+}
+
+function renderSceneEnd(){
+  window.scrollTo(0, 0);
+  var scene = SCENES[view.sceneIdx];
+  var recent = mistakeLog.filter(function(m){ return m.sceneId === scene.id; }).slice(-6);
+  var html = '<div class="scene-end">';
+  html += '<h2>Scena completata</h2>';
+  html += '<p>'+scene.title+'</p>';
+  html += '<div class="tally"><div><div class="num">'+view.sceneCorrect+'</div><div class="lbl">Right away</div></div>';
+  html += '<div><div class="num">'+view.sceneMistakes+'</div><div class="lbl">Needed a fix</div></div></div>';
+
+  if(recent.length){
+    html += '<div class="mistake-list">';
+    var tagLabels = {spanish:"Spanish trap", tense:"Verb tense", formality:"Tu / Lei", article:"Article", vocabulary:"Phrasing"};
+    recent.forEach(function(m){
+      html += '<div class="mi"><span class="tag">'+(tagLabels[m.tag]||m.tag)+'</span>';
+      if(m.userText) html += '<div class="mi-row"><span class="mi-label">You said</span><span class="mi-said">'+m.userText+'</span></div>';
+      if(m.correctText) html += '<div class="mi-row"><span class="mi-label">Correct</span><span class="mi-correct">'+m.correctText+'</span></div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  var nextIdx = SCENES.findIndex(function(s){ return s.id === scene.id; }) + 1;
+  if(nextIdx < SCENES.length){
+    html += '<button class="btn" id="btn-next-scene">Continue to '+SCENES[nextIdx].title+'</button>';
+  }
+  html += '<button class="btn ghost" id="btn-home">Back to scenes</button>';
+  html += '</div>';
+  app.innerHTML = html;
+  ensureIcons();
+
+  var nb = document.getElementById('btn-next-scene');
+  if(nb) nb.addEventListener('click', function(){ startScene(nextIdx); });
+  document.getElementById('btn-home').addEventListener('click', goHome);
+}
+
+/* ================= Pre-flight sheet ================= */
+function openPreflight(){
+  var wrap = document.createElement('div');
+  wrap.className = 'sheet-backdrop';
+  wrap.innerHTML =
+    '<div class="sheet sheet-wrap">'+
+    '<button class="sheet-close" id="sheet-close">'+iconSvg('close')+'</button>'+
+    '<h2>Before you fly</h2>'+
+    '<p class="sub">Three quick settings so dictation and audio work with no signal.</p>'+
+    checkItem('kbd', 'Add Italian to your keyboard', 'Gboard → gear icon → Languages → Add keyboard → Italian.')+
+    checkItem('dict', 'Download offline voice typing', 'Settings → System → Languages &amp; input → On-device recognition → Italian. Test it in airplane mode.')+
+    checkItem('tts', 'Download an Italian text-to-speech voice', 'Settings → Text-to-speech output → download the Italian voice, so tap-to-hear works offline.')+
+    '</div>';
+  document.body.appendChild(wrap);
+  ensureIcons();
+  wrap.addEventListener('click', function(e){ if(e.target === wrap) wrap.remove(); });
+  document.getElementById('sheet-close').addEventListener('click', function(){ wrap.remove(); });
+  ['kbd','dict','tts'].forEach(function(k){
+    var cb = document.getElementById('chk-'+k);
+    cb.checked = !!checklist[k];
+    cb.addEventListener('change', function(){
+      checklist[k] = cb.checked;
+      safeSet(CHECK_KEY, checklist);
+    });
+  });
+}
+function checkItem(key, title, desc){
+  return '<label class="check-item"><input type="checkbox" id="chk-'+key+'"><div><b>'+title+'</b><span>'+desc+'</span></div></label>';
+}
+
+function openReview(){
+  var wrap = document.createElement('div');
+  wrap.className = 'sheet-backdrop';
+  var tagLabels = {spanish:"Spanish trap", tense:"Verb tense", formality:"Tu / Lei", article:"Article", vocabulary:"Phrasing"};
+  var counts = {};
+  mistakeLog.forEach(function(m){ counts[m.tag] = (counts[m.tag]||0)+1; });
+  var rows = Object.keys(counts).sort(function(a,b){ return counts[b]-counts[a]; }).map(function(tag){
+    return '<div class="check-item" style="align-items:center"><div style="flex:1"><b>'+(tagLabels[tag]||tag)+'</b><span>'+counts[tag]+' time'+(counts[tag]>1?'s':'')+' this session</span></div></div>';
+  }).join('');
+  wrap.innerHTML =
+    '<div class="sheet sheet-wrap">'+
+    '<button class="sheet-close" id="sheet-close2">'+iconSvg('close')+'</button>'+
+    '<h2>Your weak spots</h2>'+
+    '<p class="sub">Patterns from tonight — a full version would use these to shape tomorrow&#39;s drills automatically.</p>'+
+    rows +
+    '</div>';
+  document.body.appendChild(wrap);
+  ensureIcons();
+  wrap.addEventListener('click', function(e){ if(e.target === wrap) wrap.remove(); });
+  document.getElementById('sheet-close2').addEventListener('click', function(){ wrap.remove(); });
+}
+
+/* ================= Ask panel ================= */
+// Builds a short, plain-English recap of where the player currently is in the scene,
+// so their question can be about "this" without having to re-explain the context.
+function buildAskContext(scene, idx){
+  var lines = ["You are a friendly, concise Italian tutor. A learner is practicing a scripted roleplay scene and has a question about a phrase, a nuance, or something they just saw or answered. Answer directly in a few sentences — no long lectures unless they ask for more. Default to English, with Italian words/phrases quoted where useful."];
+  var ctx = [];
+  for(var i = Math.max(0, idx - 3); i <= idx && i < scene.turns.length; i++){
+    var t = scene.turns[i];
+    if(!t) continue;
+    if(t.type === 'npc') ctx.push('The character (' + (t.speaker||'NPC') + ') said: "' + t.it + '"');
+    if(t.type === 'prompt' || t.type === 'choice'){
+      ctx.push('The learner was asked, in English: "' + t.en + '"');
+      if(t.translation) ctx.push('A natural Italian answer: ' + t.translation);
+    }
+  }
+  if(ctx.length) lines.push('Scene context so far:\n' + ctx.join('\n'));
+  return lines.join('\n\n');
+}
+
+function openAskPanel(scene){
+  var wrap = document.createElement('div');
+  wrap.className = 'sheet-backdrop';
+  wrap.innerHTML =
+    '<div class="sheet sheet-wrap ask-sheet">'+
+    '<button class="sheet-close" id="ask-close">'+iconSvg('close')+'</button>'+
+    '<h2>Chiedi</h2>'+
+    '<div class="ask-context">Ask about anything in this scene — a phrase, a nuance, why a correction was made.</div>'+
+    '<div class="ask-log" id="ask-log"></div>'+
+    '<div class="ask-input-row">'+
+    '<textarea id="ask-input" rows="1" placeholder="Ask a question…"></textarea>'+
+    '<button class="send" id="ask-send" aria-label="Send">'+iconSvg('send')+'</button>'+
+    '</div></div>';
+  document.body.appendChild(wrap);
+  ensureIcons();
+  wrap.addEventListener('click', function(e){ if(e.target === wrap) wrap.remove(); });
+  document.getElementById('ask-close').addEventListener('click', function(){ wrap.remove(); });
+
+  var logEl = document.getElementById('ask-log');
+  var inputEl = document.getElementById('ask-input');
+  var sendBtn = document.getElementById('ask-send');
+  var context = buildAskContext(scene, view.turnIdx);
+  var askTurns = []; // this panel's own back-and-forth; sample() itself has no memory between calls
+
+  function appendMsg(role, text){
+    var div = document.createElement('div');
+    div.className = 'ask-msg ask-' + role;
+    div.textContent = text;
+    logEl.appendChild(div);
+    logEl.scrollTop = logEl.scrollHeight;
+    return div;
+  }
+
+  if(!claudeSample){
+    appendMsg('system', "Ask isn't available in this view right now.");
+    inputEl.disabled = true;
+    sendBtn.disabled = true;
+    return;
+  }
+
+  function askErrorCopy(err){
+    var code = err && err.code;
+    if(code === 'not_granted' || code === 'sampling_disabled' || code === 'not_declared' || code === 'capability_disabled'){
+      return "Ask isn't available here right now.";
+    }
+    if(code === 'rate_limited') return "Too many questions at once — try again in a moment.";
+    if(code === 'cancelled') return null;
+    return "Couldn't get an answer just then — try asking again.";
+  }
+
+  function doAsk(){
+    var q = inputEl.value.trim();
+    if(!q || sendBtn.disabled) return;
+    inputEl.value = '';
+    inputEl.style.height = 'auto';
+    appendMsg('user', q);
+    askTurns.push({role:'user', content:q});
+    var replyEl = appendMsg('assistant', 'Thinking…');
+    sendBtn.disabled = true;
+    var input = [{role:'user', content:context}].concat(askTurns);
+    claudeSample(input, {
+      cache:false,
+      onText:function(e){ replyEl.textContent = e.text; logEl.scrollTop = logEl.scrollHeight; }
+    }).then(function(res){
+      replyEl.textContent = res.text;
+      askTurns.push({role:'assistant', content:res.text});
+      sendBtn.disabled = false;
+    }).catch(function(err){
+      var copy = askErrorCopy(err);
+      if(copy === null){ replyEl.remove(); } // cancelled — nothing to show
+      else { replyEl.textContent = (err && err.text) ? err.text : copy; }
+      sendBtn.disabled = false;
+    });
+  }
+
+  sendBtn.addEventListener('click', doAsk);
+  inputEl.addEventListener('input', function(){
+    inputEl.style.height = 'auto';
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 90) + 'px';
+  });
+  inputEl.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); doAsk(); }
+  });
+  inputEl.focus({preventScroll:true});
+}
+
+render();
+})();
+</script>
+</body>
+</html>
